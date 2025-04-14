@@ -166,8 +166,6 @@ public class LearnModel extends StudyMode{
         saveCards.addAll(unsortedTerms);
         saveCards.addAll(knownTerms);
 
-
-
         ObjectMapper objectMapper = new ObjectMapper();
         int totalCards = unknownTerms.size() + knownTerms.size() + unsortedTerms.size();
         try {

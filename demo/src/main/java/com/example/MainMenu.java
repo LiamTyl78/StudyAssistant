@@ -112,7 +112,7 @@ public class MainMenu {
 
     private ArrayList<File> readFlashcardSets(){
         ArrayList<File> files = new ArrayList<>();
-        String directoryPath = "cardsets";
+        String directoryPath = "demo\\studysets";
         try (Stream<Path> paths = Files.walk(Paths.get(directoryPath))) {
             paths.filter(path -> path.toString().toLowerCase().endsWith(".csv"))
             .forEach(path -> {

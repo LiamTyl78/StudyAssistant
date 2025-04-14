@@ -1,9 +1,10 @@
 /.vscode
 /bin
 /lib
-/cardsets
-/saves
-demo/src/images
-test.csv
+/demo/saves/*.json
+*.jpg
+*.png
 readme.doc
 *.class
+demo/studysets
+!demo/studysets/JavaTechnicalQuestions.csv
