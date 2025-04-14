@@ -29,7 +29,7 @@ public class MainMenu {
         frame.setLayout(null);
         frame.setSize(500, 400);
         frame.setResizable(false);
-        frame.setTitle("Flashcards");
+        frame.setTitle("Study Assistant");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
         menuBar = new JMenuBar();

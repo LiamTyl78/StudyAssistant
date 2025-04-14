@@ -35,7 +35,7 @@ public class StudyModeSelector {
         panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         JLabel label = new JLabel("How do you want to study this set?");
-        JLabel learnProgressLabel = new JLabel(learnDeck.getKnownCards() + " out of " + learnDeck.getTotalCards() + " studied");
+        JLabel learnProgressLabel = new JLabel(learnDeck.getKnownCards() + " out of " + learnDeck.getTotalCards() + " learned");
         flashcardsButton = new JButton("Flashcards");
         learnModeButton = new JButton("Learn");
         resetButton = new JButton("Reset Progress");
@@ -60,7 +60,7 @@ public class StudyModeSelector {
         resetButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 learnDeck.resetProgress();
-                learnProgressLabel.setText(learnDeck.getKnownCards() + " out of " + learnDeck.getTotalCards() + " studied");
+                learnProgressLabel.setText(learnDeck.getKnownCards() + " out of " + learnDeck.getTotalCards() + " learned");
             }
         });
 

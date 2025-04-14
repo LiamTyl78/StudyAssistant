@@ -20,7 +20,7 @@ public class LearnModel extends StudyMode{
         String[] filepathSplit = csvPath.split("\\\\");
         filepathSplit = filepathSplit[filepathSplit.length-1].split("\\.");
         filename = filepathSplit[0];
-        File file = new File("saves/" + filename + ".json");
+        File file = new File("demo/saves/" + filename + ".json");
 
         if (file.exists() && file.isFile()) {
             loadJson(file.getPath());
@@ -43,6 +43,13 @@ public class LearnModel extends StudyMode{
     @Override
     public void startMode(){
         
+        if (unsortedTerms.size() == 0) {
+            start.show();
+            learnView.displayMessage("Hi there! Looks like you've already learned all the terms in this set.\nIf you would like to start over click on the reset progress button\nbefore launching learn mode again.");
+            learnView.dispose();
+            return;
+        }
+
         random.SetMax(unsortedTerms.size() - 1);
         termIndex = random.Generate();
 
@@ -66,7 +73,7 @@ public class LearnModel extends StudyMode{
             String correctAnswer = answers.get(index);
             selectedAnswers.add(correctAnswer);
         }
-        random.SetMax(selectedAnswers.size() - 1);
+        random.SetMax(selectedAnswers.size());
         ansPos = random.Generate();
         selectedAnswers.add(ansPos, currentTerm);
         int buttonsShown = selectedAnswers.size();
@@ -106,7 +113,9 @@ public class LearnModel extends StudyMode{
                 learnView.hide();
                 learnView.displayMessage("You've learned all the terms in this set. Nice Job!");
                 learnView.dispose();
+                saveProgress();
                 return;
+  
             } else {
                 learnView.displayMessage("You got " + correct + " answers correct out of " + currentRoundTerms +  " this round. Lets keep on practicing the terms you missed.");
                 currentTermIndex = 1;
@@ -115,6 +124,7 @@ public class LearnModel extends StudyMode{
 
             for (Card card : unknownTerms) {
                 unsortedTerms.add(card);
+                card.setSorted(false);
             }
             currentRoundTerms = unsortedTerms.size(); 
             unknownTerms.clear();
@@ -169,7 +179,7 @@ public class LearnModel extends StudyMode{
         ObjectMapper objectMapper = new ObjectMapper();
         int totalCards = unknownTerms.size() + knownTerms.size() + unsortedTerms.size();
         try {
-            objectMapper.writeValue(new File("saves/" + filename + ".json"), new SaveData(saveCards, knownTerms.size(), totalCards));
+            objectMapper.writeValue(new File("demo/saves/" + filename + ".json"), new SaveData(saveCards, knownTerms.size(), totalCards));
         } catch (Exception e) {
             e.printStackTrace();
         }

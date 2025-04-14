@@ -13,7 +13,7 @@ public class LearnView {
     private LearnModel model;
     private JTextArea quesLabel;
     private JLabel image;
-    private JButton ans1 = new JButton(), ans2 = new JButton(), ans3 = new JButton(), ans4 = new JButton(), backButton = new JButton("Back");
+    private JButton ans1 = new JButton(), ans2 = new JButton(), ans3 = new JButton(), ans4 = new JButton(), backButton = new JButton("Save & Close");
     private boolean buttonsInit = false;
     private MainMenu start;
 
