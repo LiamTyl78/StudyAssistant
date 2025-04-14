@@ -17,7 +17,7 @@
     </dependencies>
 
     <build>
-        <sourceDirectory>src/main/java</sourceDirectory>
+        <sourceDirectory>demo/src/main/java</sourceDirectory>
         <plugins>   
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>

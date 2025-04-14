@@ -8,3 +8,4 @@ readme.doc
 *.class
 demo/studysets
 !demo/studysets/JavaTechnicalQuestions.csv
+/target
