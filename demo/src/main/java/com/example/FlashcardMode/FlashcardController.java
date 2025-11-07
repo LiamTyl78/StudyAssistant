@@ -1,4 +1,7 @@
-package com.example;
+package com.example.FlashcardMode;
+
+import com.example.MainMenu;
+import com.example.StudyMode;
 
 public class FlashcardController extends StudyMode{
     private FlashcardView view;
@@ -9,8 +12,7 @@ public class FlashcardController extends StudyMode{
         this.model = new FlashcardModel(filePath, false);
         this.view = new FlashcardView(this);
         this.mainMenu = mainMenu;
-        view.update(model.getCurrentFlashcard(), model.getCurrentIndex());
-        view.displaySide(false);
+        
     }
 
     public void handleQuitButton(){
@@ -34,5 +36,13 @@ public class FlashcardController extends StudyMode{
 
     public int getDeckSize(){
         return model.getFlashcardsSize();
+    }
+
+    @Override
+    public int startMode() {
+        view.update(model.getCurrentFlashcard(), model.getCurrentIndex());
+        view.displaySide(false);
+        view.show();
+        return 0;
     }
 }

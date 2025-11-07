@@ -31,7 +31,7 @@ public class RandomInteger {
     public int GetMax() {
         return max;
     }
-    int Generate(){
+    public int Generate(){
         return (int)((range) *  Math.random()) + min;
     }
 }

@@ -1,4 +1,4 @@
-package com.example;
+package com.example.FlashcardMode;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -14,6 +14,10 @@ import javax.swing.JTextPane;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
+
+import com.example.Card;
+
+import com.example.InvisibleCaret;
 
 public class FlashcardView {
 
@@ -48,6 +52,8 @@ public class FlashcardView {
         card.setMaximumSize(new Dimension(500,150));
         // card.setMinimumSize(new Dimension(200,200));
         card.setAlignmentX(JTextArea.CENTER_ALIGNMENT);
+        card.setCaret(new InvisibleCaret());
+        card.setHighlighter(null);
 
         StyledDocument doc = card.getStyledDocument();
         SimpleAttributeSet center = new SimpleAttributeSet();
@@ -63,20 +69,14 @@ public class FlashcardView {
 
         //setup buttons and thier action listeners
         quitButton = new JButton("Exit");
-        // backButton.setPreferredSize(new Dimension(150,25));
-        // backButton.setMinimumSize(new Dimension(150,25));
         quitButton.setMaximumSize(new Dimension(150,25));
         quitButton.addActionListener(e -> this.controller.handleQuitButton());
 
         nextButton = new JButton("Next");
-        // nextButton.setPreferredSize(new Dimension(150,25));
-        // nextButton.setMinimumSize(new Dimension(150,25));
         nextButton.setMaximumSize(new Dimension(150,25));
         nextButton.addActionListener(e -> this.controller.handleNextButton());
 
         prevButton = new JButton("Previous");
-        // prevButton.setPreferredSize(new Dimension(150,25));
-        // prevButton.setMinimumSize(new Dimension(150,25));
         prevButton.setMaximumSize(new Dimension(150,25));
         prevButton.addActionListener(e -> this.controller.handlePrevButton());
 
@@ -103,7 +103,6 @@ public class FlashcardView {
         flashcardPanel.add(card);
 
         frame.add(flashcardPanel);
-        frame.setVisible(true);
 
     }
 
@@ -123,5 +122,9 @@ public class FlashcardView {
 
     public void dispose(){
         frame.dispose();
+    }
+
+    public void show(){
+        frame.setVisible(true);
     }
 }

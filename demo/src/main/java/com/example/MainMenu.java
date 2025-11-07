@@ -75,7 +75,7 @@ public class MainMenu {
             {
                 if (!studySetList.isSelectionEmpty()) {
                     String selectedFile = (studySetList.getSelectedValue().getPath());
-                    SwingUtilities.invokeLater(() -> new StudyModeSelector(selectedFile, frame, MainMenu.this));
+                    SwingUtilities.invokeLater(() -> new DeckPreviewWindow(selectedFile, frame, MainMenu.this));
                     
                 }
             }

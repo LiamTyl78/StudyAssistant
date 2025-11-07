@@ -1,22 +1,28 @@
-package com.example;
+package com.example.LearnMode;
 import java.io.File;
 import java.util.*;
 
-
+import com.example.Card;
+import com.example.RandomInteger;
+import com.example.SaveData;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class LearnModel extends StudyMode{
+public class LearnModel{
     private ArrayList<Card> unsortedTerms = new ArrayList<>();
     private ArrayList<Card> knownTerms = new ArrayList<>(), unknownTerms = new ArrayList<>();
     private ArrayList<String> selectedAnswers = new ArrayList<>(), answers = new ArrayList<>();
     private int termIndex, correct = 0, ansPos, currentRoundTerms, currentTermIndex = 1;
-    private LearnView learnView;
-    private MainMenu start;
     private RandomInteger random = new RandomInteger(0, 3);
     private String filename;
+    private LearnModelEvents eventHandler;
 
-    public LearnModel(String csvPath){
 
+    public LearnModel(String csvPath, LearnModelEvents eventHandler){
+        openFile(csvPath);
+        this.eventHandler = eventHandler;
+    }
+
+    private void openFile(String csvPath){
         String[] filepathSplit = csvPath.split("\\\\");
         filepathSplit = filepathSplit[filepathSplit.length-1].split("\\.");
         filename = filepathSplit[0];
@@ -29,24 +35,21 @@ public class LearnModel extends StudyMode{
             loadQuestions(csvPath);
         }
         loadAnswers();
-        this.start = App.start;
         currentRoundTerms = unsortedTerms.size();
-        learnView = new LearnView(this);
     }
 
-    public void loadAnswers(){
+
+    private void loadAnswers(){
         unsortedTerms.forEach(card -> answers.add(card.getTerm()));
         knownTerms.forEach(card -> answers.add(card.getTerm()));
         unknownTerms.forEach(card -> answers.add(card.getTerm()));
     }
-    
-    @Override
-    public void startMode(){
-        
+
+    public void init(){
         if (unsortedTerms.size() == 0) {
-            start.show();
-            learnView.displayMessage("Hi there! Looks like you've already learned all the terms in this set.\nIf you would like to start over click on the reset progress button\nbefore launching learn mode again.");
-            learnView.dispose();
+            eventHandler.showStart();
+            eventHandler.disposeView();
+            eventHandler.displayMessage("Hi there! Looks like you've already learned all the terms in this set.\nIf you would like to start over click on the reset progress button\nbefore launching learn mode again.");
             return;
         }
 
@@ -58,8 +61,8 @@ public class LearnModel extends StudyMode{
         String currentTerm = unsortedTerms.get(termIndex).getTerm();
         String currentDefinition = unsortedTerms.get(termIndex).getDefinition();
 
-        learnView.update(currentImage, currentDefinition);
-        learnView.setTitle(currentTermIndex++, currentRoundTerms);
+        eventHandler.updateView(currentImage, currentDefinition);
+        eventHandler.setViewTitle(currentTermIndex++, currentRoundTerms);
         int index = random.Generate();
         for (int i = 0; i < 3 && i < answers.size() - 1; i++) {
             boolean containsCurrent = true;
@@ -77,8 +80,8 @@ public class LearnModel extends StudyMode{
         ansPos = random.Generate();
         selectedAnswers.add(ansPos, currentTerm);
         int buttonsShown = selectedAnswers.size();
-        learnView.setButtons(selectedAnswers, buttonsShown);
-        learnView.show();
+        eventHandler.setViewButtons(selectedAnswers, buttonsShown);
+        eventHandler.showView();
     }
 
     /**
@@ -91,13 +94,13 @@ public class LearnModel extends StudyMode{
 
         currentCard.setSorted(true);
         if (ans == (ansPos + 1)) {
-            learnView.displayMessage("Correct!");
+            eventHandler.displayMessage("Correct!");
             currentCard.setKnown(true);
             correct++;
             knownTerms.add(unsortedTerms.get(termIndex));
             unsortedTerms.remove(termIndex);
         } else {
-            learnView.incorrect("Incorrect, the correct answer was \"" + correctAnswer + "\"");
+            eventHandler.displayIcorrectMessage("Incorrect, the correct answer was \"" + correctAnswer + "\"");
             currentCard.setKnown(false);
             unknownTerms.add(unsortedTerms.get(termIndex));
             unsortedTerms.remove(termIndex);
@@ -109,15 +112,15 @@ public class LearnModel extends StudyMode{
             float percent = ((float)correct / currentRoundTerms) * 100;
             percent = (float) (Math.round(percent * 10) / 10.0);
             if (percent == 100) {
-                start.show();
-                learnView.hide();
-                learnView.displayMessage("You've learned all the terms in this set. Nice Job!");
-                learnView.dispose();
+                eventHandler.showStart();
+                eventHandler.hideView();
+                eventHandler.displayMessage("You've learned all the terms in this set. Nice Job!");
+                eventHandler.disposeView();
                 saveProgress();
                 return;
   
             } else {
-                learnView.displayMessage("You got " + correct + " answers correct out of " + currentRoundTerms +  " this round. Lets keep on practicing the terms you missed.");
+                eventHandler.displayMessage("You got " + correct + " answers correct out of " + currentRoundTerms +  " this round. Lets keep on practicing the terms you missed.");
                 currentTermIndex = 1;
                 correct = 0;
             }
@@ -130,7 +133,7 @@ public class LearnModel extends StudyMode{
             unknownTerms.clear();
         }
         
-        startMode();
+        init();
     }
     
     /**
@@ -228,7 +231,13 @@ public class LearnModel extends StudyMode{
         return totalCards;
     }
 
+    public int getUnknownTermsLeft(){
+        int totalCards = unknownTerms.size() + knownTerms.size() + unsortedTerms.size();
+        return (totalCards - knownTerms.size());
+    }
+
     public int getKnownCards(){
         return knownTerms.size();
     }
+    
 }

@@ -1,7 +1,11 @@
-package com.example;
+package com.example.FlashcardMode;
 
 import java.util.ArrayList;
 import java.util.Scanner;
+
+import com.example.Card;
+import com.example.StudyMode;
+
 import java.io.File;
 
 

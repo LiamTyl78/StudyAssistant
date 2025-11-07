@@ -7,7 +7,7 @@ public class Card {
     private String term, definition, imageLink;
     private boolean sorted, known;
     
-    Card(String definition, String term, String imageLink){
+    public Card(String definition, String term, String imageLink){
         this.term = term;
         this.definition = definition;
         this.imageLink = imageLink;

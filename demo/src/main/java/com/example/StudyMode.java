@@ -2,9 +2,12 @@ package com.example;
 
 import java.util.ArrayList;
 
+/**
+ * This class contains shared methods for the different study modes
+ */
 public class StudyMode {
-    void startMode(){
-
+    public int startMode(){
+        return 0;
     };
 
     public void shuffle(ArrayList<Card> list) {
