@@ -8,8 +8,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusListener;
 import java.util.ArrayList;
-import java.util.Scanner;
-import java.io.File;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -38,22 +36,25 @@ public class EditPane {
     private ArrayList<JTextField> defFields = new ArrayList<>();
     private ArrayList<JTextField> termFields = new ArrayList<>();
     private ArrayList<StringBuilder> imageFields = new ArrayList<>();
+    private StudyDeckFile selectedFile;
 
     /**
      * Constructor for the Deck Modify window that allows users to edit their study
      * set
      * 
-     * @param cardset the file to be edited
+     * @param selectedFile the file to be edited
      */
-    public EditPane(File cardset, JFrame parent) {
-        frame = new JDialog(parent, "Editing " + removeFileExtension(cardset.getName()), true);
+    public EditPane(String selectedFilePath, JFrame parent) {
+        StudyDeckFile selectedFile = new StudyDeckFile(selectedFilePath);
+        selectedFile.open();
+        this.selectedFile = selectedFile;
+        frame = new JDialog(parent, "Editing " + removeFileExtension(selectedFile.getName()), true);
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setResizable(false);
-        frame.setLocationRelativeTo(parent);
         frame.setSize(FRAME_WIDTH, FRAME_HEIGHT);
         frame.setLayout(new BorderLayout());
 
-        loadFromFile(cardset.getPath());
+        loadFromFile();
         int questionNum = questions.size();
         cardSetPanel = new JPanel();
         cardSetPanel.setLayout(new BoxLayout(cardSetPanel, BoxLayout.Y_AXIS));
@@ -80,7 +81,7 @@ public class EditPane {
         JButton saveButton = new JButton("Save");
         saveButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                save(cardset);
+                save(selectedFile);
                 frame.dispose();
             }
         });
@@ -103,7 +104,8 @@ public class EditPane {
         frame.add(buttonPanel, BorderLayout.SOUTH);
 
         frame.setVisible(true);
-
+        frame.setLocationRelativeTo(parent);
+        selectedFile.close();
     }
 
     private void addFlashcardFields( String definition, String term, StringBuilder imagePath) {
@@ -225,16 +227,12 @@ public class EditPane {
                 setImage(image, imagePath);
     }
 
-    private void loadFromFile(String filepath) {
+    private void loadFromFile() {
         try {
-            Scanner sc = new Scanner(new File(filepath));
-
-            if (sc.hasNextLine()) {
-                sc.nextLine();
-            }
-
-            while (sc.hasNext()) {
-                String line = sc.nextLine().trim();
+            String line = "";
+            selectedFile.readLine();
+            while ((line = selectedFile.readLine()) != null) {
+                line = line.trim();
                 String[] parts = line.split(",");
 
                 if (parts.length >= 3) {
@@ -244,7 +242,6 @@ public class EditPane {
                     questions.add(new Card(term, definition, image));
                 }
             }
-            sc.close();
         } catch (Exception e) {
 
         }
@@ -272,19 +269,8 @@ public class EditPane {
         return flashcards;
     }
 
-    private void save(File file) {
-        System.out.println("Saving " + file.getName() + "...");
-        ArrayList<String[]> flashcards = getFlashcardValues();
-
-        try {
-            java.io.PrintWriter writer = new java.io.PrintWriter(file);
-            writer.println("Definition,Term,Image_Path");
-            flashcards.forEach(flashcard -> writer.println(flashcard[0] + "," + flashcard[1] + "," + flashcard[2] + ","));
-            writer.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        System.out.println("Done.");
+    private void save(StudyDeckFile file) {
+        file.save(getFlashcardValues());
     }
 
     private String removeFileExtension(String filename) {

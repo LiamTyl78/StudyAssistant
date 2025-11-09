@@ -24,11 +24,6 @@ public class LearnView {
 
     private LearnModeUserEvents eventHandler;
 
-    /**
-     * Constructor for LearnView
-     * 
-     * @param model
-     */
     LearnView(LearnModeUserEvents eventHandler) {
         this.eventHandler = eventHandler;
         image = new JLabel();
@@ -50,7 +45,6 @@ public class LearnView {
         quesLabel.setVisible(true);
         quesLabel.setLineWrap(true);
         quesLabel.setWrapStyleWord(true);
-        quesLabel.setBounds(100, 150, 450, 100);
         quesLabel.setEditable(false);
         quesLabel.setCaret(new InvisibleCaret());
         quesLabel.setHighlighter(null);
@@ -66,12 +60,14 @@ public class LearnView {
      * Updates the question and image
      * 
      * @param filepath
-     * @param question
+     * @param definition
      */
-    public void update(String filepath, String question) {
-        quesLabel.setText(question);
-
-        if (!(filepath.equals("na"))) {
+    public void update(String filepath, String definition) {
+        boolean containsImage = !filepath.equals("na");
+        boolean containsDef = !definition.equals("na");
+        quesLabel.setVisible(false);
+        image.setVisible(false);
+        if (containsImage) {
             ImageIcon originalIcon = new ImageIcon(filepath);
             int labelWidth = 500;
             int labelHeight = 300;
@@ -80,14 +76,28 @@ public class LearnView {
             ImageIcon scaledIcon = new ImageIcon(scaledImage);
             image.setIcon(scaledIcon);
             image.setSize(labelWidth, labelHeight);
-            quesLabel.setVisible(false);
             image.setLocation(75, 30);
             image.setVisible(true);
-        } else {
-            image.setVisible(false);
-            quesLabel.setText(question);
+        } 
+        if (containsDef) {
+            quesLabel.setBounds(100, 150, 450, 100);
+            quesLabel.setText(definition);
             quesLabel.setVisible(true);
         }
+        if (containsImage && containsDef) {
+            int labelWidth = 300;
+            int labelHeight = 250;
+            ImageIcon scaledIcon = new ImageIcon(scaleImage(labelWidth, labelHeight, filepath));
+            image.setIcon(scaledIcon);
+            image.setBounds(150, 25, labelWidth, labelHeight);
+            quesLabel.setBounds(100, 280, 450, 50);
+        }
+    }
+
+    private Image scaleImage(int width, int height, String filepath){
+        ImageIcon originalIcon = new ImageIcon(filepath);
+        Image originalImage = originalIcon.getImage();
+        return originalImage.getScaledInstance(width, height, Image.SCALE_SMOOTH);
     }
 
     /**

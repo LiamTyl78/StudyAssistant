@@ -10,18 +10,17 @@ import javax.swing.*;
 
 public class MainMenu {
     private JScrollPane pane;
-    private DefaultListModel<File> studySets;
+    private DefaultListModel<StudyDeckFile> studySets;
     private JFrame frame;
     private JButton studyButton, editButton, helpButton;
     private JMenuBar menuBar;
-    private JMenu file;
-    private ArrayList<File> files = new ArrayList<>();
+    private ArrayList<StudyDeckFile> files = new ArrayList<>();
 
 
     public MainMenu(){
         System.out.println("Loading Main Menu Interface...");
         try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -34,21 +33,36 @@ public class MainMenu {
         
         menuBar = new JMenuBar();
         frame.setJMenuBar(menuBar);
-        file = new JMenu("File");
+        frame.setLocationRelativeTo(null);
+        JMenu fileMenu = new JMenu("File");
         JMenuItem importMenuItem = new JMenuItem("Import study set...");
-
         importMenuItem.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e){
-                File newFile = importFile();
+                StudyDeckFile newFile = importFile();
                 if (!(newFile == null)) {
                     files.add(newFile);
                     updateFlashcardList();
                 }
             }
         });
+        
+        JMenu helpMenu = new JMenu("Help");
+        JMenuItem aboutMenuItem = new JMenuItem("About");
+        aboutMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                AboutWindow about = new AboutWindow(frame);
+            }
+            
+        });
 
-        menuBar.add(file);
-        file.add(importMenuItem);
+        fileMenu.add(importMenuItem);
+        helpMenu.add(aboutMenuItem);
+        menuBar.add(fileMenu);
+        menuBar.add(helpMenu);
+        
+        
 
 
         files = readFlashcardSets();
@@ -64,7 +78,7 @@ public class MainMenu {
 
         updateFlashcardList();
 
-        JList<File> studySetList = new JList<>(studySets);
+        JList<StudyDeckFile> studySetList = new JList<>(studySets);
         
         pane = new JScrollPane(studySetList);
         pane.setBounds(50, 50, 400, 200);
@@ -74,7 +88,7 @@ public class MainMenu {
             public void actionPerformed(ActionEvent e)
             {
                 if (!studySetList.isSelectionEmpty()) {
-                    String selectedFile = (studySetList.getSelectedValue().getPath());
+                    String selectedFile = (studySetList.getSelectedValue().getFullPath());
                     SwingUtilities.invokeLater(() -> new DeckPreviewWindow(selectedFile, frame, MainMenu.this));
                     
                 }
@@ -85,8 +99,8 @@ public class MainMenu {
             public void actionPerformed(ActionEvent e)
             {
                 if (!studySetList.isSelectionEmpty()) {
-                    java.io.File selectedFile = new java.io.File(studySetList.getSelectedValue().getPath());
-                    SwingUtilities.invokeLater(() -> new EditPane(selectedFile, frame));
+                    StudyDeckFile selectedFile = studySetList.getSelectedValue();
+                    SwingUtilities.invokeLater(() -> new EditPane(selectedFile.getFullPath(), frame));
                 }
             }
         });
@@ -110,13 +124,13 @@ public class MainMenu {
 
     
 
-    private ArrayList<File> readFlashcardSets(){
-        ArrayList<File> files = new ArrayList<>();
+    private ArrayList<StudyDeckFile> readFlashcardSets(){
+        ArrayList<StudyDeckFile> files = new ArrayList<>();
         String directoryPath = "demo\\studysets";
         try (Stream<Path> paths = Files.walk(Paths.get(directoryPath))) {
             paths.filter(path -> path.toString().toLowerCase().endsWith(".csv"))
             .forEach(path -> {
-                files.add(new File(removeFileExtension(path.getFileName().toString()), path.toAbsolutePath().toString()));
+                files.add(new StudyDeckFile(path.toAbsolutePath().toString()));
             });
         } catch (Exception e) {
             e.printStackTrace();
@@ -124,15 +138,7 @@ public class MainMenu {
         return files;
     }
 
-    private String removeFileExtension(String filename){
-        int dotindx = filename.indexOf(".");
-        if (dotindx == -1) {
-            return filename;
-        }
-        return filename.substring(0, dotindx);
-    }
-
-    private File importFile(){
+    private StudyDeckFile importFile(){
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
         fileChooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("CSV files", "csv"));
@@ -140,7 +146,7 @@ public class MainMenu {
             int result = fileChooser.showOpenDialog(frame);
             if (result == JFileChooser.APPROVE_OPTION ) {
                 java.io.File selectedFile = fileChooser.getSelectedFile();
-                File file = new File(removeFileExtension(selectedFile.getName()), selectedFile.getAbsolutePath());
+                StudyDeckFile file = new StudyDeckFile(selectedFile.getAbsolutePath());
                 if (!selectedFile.getAbsolutePath().toLowerCase().endsWith(".csv")) {
                     error("Invalid file type", "Invalid file type. Please select a CSV file.");
                 }
@@ -159,7 +165,7 @@ public class MainMenu {
 
     private void updateFlashcardList(){
         studySets.clear();
-        for (File file : files) {
+        for (StudyDeckFile file : files) {
             studySets.addElement(file);
         }
     }

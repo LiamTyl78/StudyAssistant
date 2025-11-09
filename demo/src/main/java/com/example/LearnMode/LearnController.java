@@ -82,23 +82,17 @@ public class LearnController implements LearnModeUserEvents, LearnModelEvents{
     }
 
     @Override
-    public void setViewButtons(ArrayList<String> selectedAnswers, int buttonsShown) {
-        view.setButtons(selectedAnswers, buttonsShown);
-    }
-
-    @Override
-    public void setViewTitle(int i, int currentRoundTerms) {
-        view.setTitle(i, currentRoundTerms);
-    }
-
-    @Override
-    public void updateView(String currentImage, String currentDefinition) {
-        view.update(currentImage, currentDefinition);
-    }
-
-    @Override
     public void showStart(){
         start.show();
+    }
+
+    @Override
+    public void onUpdate(String currentImage, String currentDef, ArrayList<String> selectedAnswers, int buttonsShown,
+        int currentTermIndex, int currentRoundTerms) {
+        view.update(currentImage, currentDef);
+        view.setTitle(currentTermIndex, currentRoundTerms);
+        view.setButtons(selectedAnswers, buttonsShown);
+        view.show();
     }
 
 }

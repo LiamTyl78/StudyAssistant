@@ -7,10 +7,6 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStreamReader;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -34,24 +30,29 @@ public class DeckPreviewWindow {
     private JPanel panel;
     private MainMenu mainMenu;
     private JButton flashcardsButton, learnModeButton, resetButton;
-
     
+    /**
+     *initialize the components and window elements along with referencing the main menu window
+     * 
+     * @param filePath
+     * @param parent
+     * @param mainMenu
+     */
     public DeckPreviewWindow(String filePath, JFrame parent, MainMenu mainMenu){
-        //initialize the components and window elements along with referencing the main menu window
+        StudyDeckFile file = new StudyDeckFile(filePath);
         this.mainMenu = mainMenu;
         frame = new JDialog(parent, "", true);
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setPreferredSize(new Dimension(FRAME_WIDTH,FRAME_HEIGHT));
         frame.setResizable(false);
-        frame.setLocationRelativeTo(parent);
         panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+
         
         JLabel label = new JLabel("How do you want to study this set?");
 
-        String[] filenameParts = filePath.split("\\\\");
 
-        JLabel deckNameLabel = new JLabel(filenameParts[filenameParts.length - 1].strip());
+        JLabel deckNameLabel = new JLabel(file.toString());
         
         LearnModeMain learnMode = new LearnModeMain(filePath);
         JLabel learnProgressLabel = new JLabel(learnMode.getKnownCards() + " out of " + learnMode.getTotalCards() + " learned");
@@ -61,9 +62,10 @@ public class DeckPreviewWindow {
 
         JPanel learnButtonPanel = new JPanel();
 
-        JScrollPane flashcardPreviewPane = populateDeckPreview(filePath);
+        JScrollPane flashcardPreviewPane = populateDeckPreview(file);
         flashcardPreviewPane.getVerticalScrollBar().setUnitIncrement(5);
         frame.pack();
+        frame.setLocationRelativeTo(parent);
         
        
 
@@ -120,8 +122,8 @@ public class DeckPreviewWindow {
 
     }
 
-    JScrollPane populateDeckPreview(String filepath){
-        BufferedReader br;
+    JScrollPane populateDeckPreview(StudyDeckFile file){
+        file.open();
         JScrollPane previewPane = new JScrollPane();
         JPanel flashcardList = new JPanel();
         flashcardList.setLayout(new BoxLayout(flashcardList, BoxLayout.Y_AXIS));
@@ -129,8 +131,7 @@ public class DeckPreviewWindow {
         final int TERM_COLUMN_WIDTH = 300;
         try {
             String line;
-            br = new BufferedReader(new InputStreamReader(new FileInputStream(filepath)));
-            while ((line = br.readLine()) != null) {
+            while ((line = file.readLine()) != null) {
                 
                 String[] values = line.split(",");
                 
@@ -176,13 +177,12 @@ public class DeckPreviewWindow {
                 flashcardList.add(Box.createVerticalStrut(5));
 
             }
-        } catch (FileNotFoundException e) {
-            System.out.println("file not found");
         }catch (Exception e){
             
         }
         previewPane.setViewportView(flashcardList);
         
+        file.close();
         return previewPane;
     }
 

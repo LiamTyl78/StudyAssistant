@@ -61,8 +61,6 @@ public class LearnModel{
         String currentTerm = unsortedTerms.get(termIndex).getTerm();
         String currentDefinition = unsortedTerms.get(termIndex).getDefinition();
 
-        eventHandler.updateView(currentImage, currentDefinition);
-        eventHandler.setViewTitle(currentTermIndex++, currentRoundTerms);
         int index = random.Generate();
         for (int i = 0; i < 3 && i < answers.size() - 1; i++) {
             boolean containsCurrent = true;
@@ -80,8 +78,7 @@ public class LearnModel{
         ansPos = random.Generate();
         selectedAnswers.add(ansPos, currentTerm);
         int buttonsShown = selectedAnswers.size();
-        eventHandler.setViewButtons(selectedAnswers, buttonsShown);
-        eventHandler.showView();
+        eventHandler.onUpdate(currentImage, currentDefinition, selectedAnswers, buttonsShown, currentTermIndex++, currentRoundTerms);
     }
 
     /**

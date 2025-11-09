@@ -14,11 +14,7 @@ public interface LearnModelEvents {
 
     void showView();
 
-    void setViewButtons(ArrayList<String> selectedAnswers, int buttonsShown);
-
-    void setViewTitle(int i, int currentRoundTerms);
-
-    void updateView(String currentImage, String currentDefinition);
+    void onUpdate(String currentImage, String currentDef, ArrayList<String> selectedAnswers, int buttonsShown, int currentTermIndex, int currentRoundTerms);
 
     void showStart();
     
