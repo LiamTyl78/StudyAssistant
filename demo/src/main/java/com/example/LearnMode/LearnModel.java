@@ -6,6 +6,7 @@ import com.example.Card;
 import com.example.RandomInteger;
 import com.example.SaveData;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.example.StudyDeckFile;
 
 public class LearnModel{
     private ArrayList<Card> unsortedTerms = new ArrayList<>();
@@ -23,9 +24,8 @@ public class LearnModel{
     }
 
     private void openFile(String csvPath){
-        String[] filepathSplit = csvPath.split("\\\\");
-        filepathSplit = filepathSplit[filepathSplit.length-1].split("\\.");
-        filename = filepathSplit[0];
+        StudyDeckFile csvfile = new StudyDeckFile(csvPath);
+        filename = csvfile.toString();
         File file = new File("demo/saves/" + filename + ".json");
 
         if (file.exists() && file.isFile()) {

@@ -107,9 +107,10 @@ public class StudyDeckFile {
     }
 
     private String makePathRelative(String filePath){
-        int slashindx = filePath.lastIndexOf("\\") + 1;
+        String substring = "studysets";
+        int slashindx = filePath.lastIndexOf(substring) + 1 + substring.length();
         if (slashindx != -1){
-            filePath = filePath.substring(slashindx, filePath.length());
+            filePath = filePath.substring(slashindx , filePath.length());
         }
         return filePath;
     }
